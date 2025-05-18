@@ -55,7 +55,8 @@ function HoverableBook({
 }
 
 function InteractiveScene() {
-  const { scene } = useGLTF("/scene.glb");
+  
+  const { scene } = useGLTF("https://miya-assets.b-cdn.net/scene.glb");
   const router = useRouter();
 
   const book1 = scene.getObjectByName("Book1");
@@ -119,7 +120,9 @@ function VideoPlane() {
 
   useEffect(() => {
     const video = document.createElement("video");
-    video.src = "/videos/skyloop.mp4";
+
+    video.src = "https://miya-assets.b-cdn.net/skyloop.mp4";
+
     video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;

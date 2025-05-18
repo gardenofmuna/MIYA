@@ -8,7 +8,9 @@ export default function VideoPlane() {
 
   useEffect(() => {
     const video = document.createElement("video");
-    video.src = "/videos/skyloop.mp4";
+
+    video.src = "https://miya-assets.b-cdn.net/skyloop.mp4";
+
     video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;
