@@ -6,7 +6,14 @@ import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { RGBELoader } from "three-stdlib";
-import Loader from "./Loader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
+import Loader from "../components/Loader";
+import OrientationPrompt from "../components/OrientationPrompt";
+import { useScreenSize } from "../src/hooks/useScreenSize";
+
+// ✅ Preload model
+useGLTF.preload("https://miya-assets.b-cdn.net/scene.glb");
 
 function HoverableBook({
   object,
@@ -55,8 +62,8 @@ function HoverableBook({
 }
 
 function InteractiveScene() {
-  
-  const { scene } = useGLTF("https://miya-assets.b-cdn.net/scene.glb");
+  const original = useGLTF("https://miya-assets.b-cdn.net/scene.glb");
+  const scene = original.scene.clone(true);
   const router = useRouter();
 
   const book1 = scene.getObjectByName("Book1");
@@ -122,7 +129,6 @@ function VideoPlane() {
     const video = document.createElement("video");
 
     video.src = "https://miya-assets.b-cdn.net/skyloop.mp4";
-
     video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;
@@ -149,6 +155,14 @@ function VideoPlane() {
 }
 
 export default function SceneCanvas() {
+  const { screenSize, isLandscape } = useScreenSize();
+  const shouldPrompt =
+    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
+
+  if (shouldPrompt) {
+    return <OrientationPrompt />;
+  }
+
   return (
     <>
       <Loader />

@@ -5,6 +5,9 @@ import { motion, useMotionValue, PanInfo } from "framer-motion";
 import type { AnimationItem } from "lottie-web";
 import Image from "next/image";
 
+import { useScreenSize } from "../src/hooks/useScreenSize";
+import OrientationPrompt from "./OrientationPrompt";
+
 export default function CursorLottie() {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<AnimationItem | null>(null);
@@ -13,13 +16,17 @@ export default function CursorLottie() {
   const dragY = useMotionValue(0);
   const [angle, setAngle] = useState(0);
 
+  const { screenSize, isLandscape } = useScreenSize();
+  const shouldPrompt =
+    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
+
   const handleDrag = (_: unknown, info: PanInfo) => {
     const rotation = info.offset.x * 0.1 + info.offset.y * 0.1;
     setAngle(rotation);
   };
 
   useEffect(() => {
-    let handleMouseMove: (e: MouseEvent) => void;
+    let handlePointerMove: (e: PointerEvent) => void;
 
     import("lottie-web").then((lottieModule) => {
       const lottie = lottieModule.default;
@@ -41,9 +48,15 @@ export default function CursorLottie() {
 
       animationRef.current = animation;
 
-      handleMouseMove = (e: MouseEvent) => {
+      handlePointerMove = (e: PointerEvent) => {
         if (!animationRef.current) return;
-        const progress = e.clientX / window.innerWidth;
+
+        const x =
+          e.clientX ??
+          (e as any).touches?.[0]?.clientX ?? // for old Safari compatibility
+          window.innerWidth / 2;
+
+        const progress = x / window.innerWidth;
         animationRef.current.goToAndStop(
           progress * animationRef.current.totalFrames,
           true
@@ -51,16 +64,20 @@ export default function CursorLottie() {
       };
 
       animation.addEventListener("DOMLoaded", () => {
-        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("pointermove", handlePointerMove);
       });
     });
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("pointermove", handlePointerMove);
       animationRef.current?.destroy();
       animationRef.current = null;
     };
   }, []);
+
+  if (shouldPrompt) {
+    return <OrientationPrompt />;
+  }
 
   return (
     <div
@@ -69,9 +86,10 @@ export default function CursorLottie() {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
+        touchAction: "none", // allow touch drag
       }}
     >
-      {/* Optimized Background Image */}
+      {/* Background Image */}
       <Image
         src="/images/wood-bg.png"
         alt="wood texture background"
@@ -83,7 +101,7 @@ export default function CursorLottie() {
         priority
       />
 
-      {/* Drag-enabled Lottie Layer */}
+      {/* Draggable Lottie Layer */}
       <motion.div
         drag
         dragMomentum={false}
@@ -100,6 +118,7 @@ export default function CursorLottie() {
           zIndex: 1,
           cursor: "grab",
           transition: "none",
+          touchAction: "none",
         }}
       >
         <div

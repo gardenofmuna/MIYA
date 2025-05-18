@@ -2,15 +2,20 @@
 
 import * as THREE from "three";
 import { useEffect, useState } from "react";
+import { useScreenSize } from "../src/hooks/useScreenSize";
+import OrientationPrompt from "./OrientationPrompt";
 
-export default function VideoPlane() {
+export default function VideoSky() {
   const [texture, setTexture] = useState<THREE.VideoTexture | null>(null);
+  const { screenSize, isLandscape } = useScreenSize();
+
+  const shouldPrompt =
+    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
 
   useEffect(() => {
     const video = document.createElement("video");
 
     video.src = "https://miya-assets.b-cdn.net/skyloop.mp4";
-
     video.crossOrigin = "anonymous";
     video.loop = true;
     video.muted = true;
@@ -26,6 +31,7 @@ export default function VideoPlane() {
     });
   }, []);
 
+  if (shouldPrompt) return <OrientationPrompt />;
   if (!texture) return null;
 
   return (

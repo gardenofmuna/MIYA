@@ -22,6 +22,9 @@ import {
 import { GLTF } from "three-stdlib";
 import { Suspense, useRef, useEffect, useState } from "react";
 
+import { useScreenSize } from "../../hooks/useScreenSize";
+import OrientationPrompt from "../../../components/OrientationPrompt";
+
 type GLTFResult = GLTF & {
   nodes: {
     VideoScreen_Object?: Mesh<BufferGeometry, Material | Material[]>;
@@ -135,12 +138,18 @@ export default function AboutPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isMuted, setIsMuted] = useState(true);
 
+  const { screenSize, isLandscape } = useScreenSize();
+  const shouldPrompt =
+    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
+
   const handleToggleMute = () => {
     setIsMuted((prev) => !prev);
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
     }
   };
+
+  if (shouldPrompt) return <OrientationPrompt />;
 
   return (
     <>
