@@ -17,13 +17,18 @@ export default function VideoSky() {
 
     video.src = "https://miya-assets.b-cdn.net/skyloop.mp4";
     video.crossOrigin = "anonymous";
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
+    video.autoplay = true;           // ✅ required on mobile
+    video.muted = true;              // ✅ required on mobile
+    video.playsInline = true;        // ✅ prevents fullscreen on iOS
+    video.loop = true;               // ✅ keep looping
     video.load();
 
+    // try playing early (some mobile browsers require this)
+    video.play().catch((err) => {
+      console.warn("Initial video.play() failed:", err);
+    });
+
     video.addEventListener("canplay", () => {
-      video.play();
       const videoTexture = new THREE.VideoTexture(video);
       videoTexture.colorSpace = THREE.SRGBColorSpace;
       videoTexture.needsUpdate = true;
@@ -32,7 +37,16 @@ export default function VideoSky() {
   }, []);
 
   if (shouldPrompt) return <OrientationPrompt />;
-  if (!texture) return null;
+
+  if (!texture) {
+    // optional fallback for mobile
+    return (
+      <mesh position={[0, 2, -20]} rotation={[0, 0, 0]}>
+        <planeGeometry args={[6, 3]} />
+        <meshBasicMaterial color="#111" />
+      </mesh>
+    );
+  }
 
   return (
     <mesh position={[0, 2, -20]} rotation={[0, 0, 0]}>

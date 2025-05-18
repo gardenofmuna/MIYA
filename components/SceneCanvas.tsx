@@ -109,14 +109,20 @@ function InteractiveScene() {
   );
 }
 
-function CustomEnvironment() {
+function CustomEnvironment({ screenSize }: { screenSize: string }) {
   const { scene } = useThree();
   const reflectionHDR = useLoader(RGBELoader, "/hdr/aircraft_workshop_01_2k.hdr");
 
   useEffect(() => {
     reflectionHDR.mapping = THREE.EquirectangularReflectionMapping;
     scene.environment = reflectionHDR;
-  }, [scene, reflectionHDR]);
+
+    if (screenSize === "mobile") {
+      scene.background = null;
+    } else {
+      scene.background = reflectionHDR;
+    }
+  }, [scene, reflectionHDR, screenSize]);
 
   return null;
 }
@@ -158,6 +164,8 @@ export default function SceneCanvas() {
   const shouldPrompt =
     (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
 
+  const isMobile = screenSize === "mobile";
+
   if (shouldPrompt) {
     return <OrientationPrompt />;
   }
@@ -166,13 +174,18 @@ export default function SceneCanvas() {
     <>
       <Loader />
       <Canvas
-        shadows
+        dpr={isMobile ? 1 : [1, 2]}
+        shadows={!isMobile}
         camera={{ position: [0.092, 4.574, -4.0], fov: 50, near: 0.01, far: 1000 }}
         style={{ background: "#111", width: "100vw", height: "100vh" }}
-        gl={{ toneMappingExposure: 1.5 }}
+        gl={{
+          toneMappingExposure: 1.2,
+          antialias: !isMobile,
+          powerPreference: "low-power",
+        }}
       >
         <Suspense fallback={null}>
-          <CustomEnvironment />
+          <CustomEnvironment screenSize={screenSize} />
           <VideoPlane />
           <OrbitControls
             target={[0, 1.5, 0]}
