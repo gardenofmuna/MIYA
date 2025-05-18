@@ -35,7 +35,6 @@ export default function CursorLottie() {
       animationRef.current = null;
 
       if (!containerRef.current) return;
-
       containerRef.current.innerHTML = "";
 
       const animation = lottie.loadAnimation({
@@ -51,10 +50,15 @@ export default function CursorLottie() {
       handlePointerMove = (e: PointerEvent) => {
         if (!animationRef.current) return;
 
-        const x =
-          e.clientX ??
-          (e as any).touches?.[0]?.clientX ?? // for old Safari compatibility
-          window.innerWidth / 2;
+        let x = e.clientX;
+
+        // Safe touch fallback without using `any`
+        if (
+          e.pointerType === "touch" &&
+          (e as unknown as TouchEvent).touches?.[0]
+        ) {
+          x = (e as unknown as TouchEvent).touches[0].clientX;
+        }
 
         const progress = x / window.innerWidth;
         animationRef.current.goToAndStop(
@@ -86,7 +90,7 @@ export default function CursorLottie() {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
-        touchAction: "none", // allow touch drag
+        touchAction: "none",
       }}
     >
       {/* Background Image */}

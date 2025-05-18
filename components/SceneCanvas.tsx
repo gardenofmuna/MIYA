@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { RGBELoader } from "three-stdlib";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 import Loader from "../components/Loader";
 import OrientationPrompt from "../components/OrientationPrompt";
