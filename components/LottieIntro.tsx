@@ -78,23 +78,27 @@ export default function LottieIntro({ onStart }: LottieIntroProps) {
     };
 
     const triggerAudio = (current: number, total: number) => {
+      prevFrameRef.current = current;
+      const atStart = current === 0;
       const atEnd = current === total - 1;
 
-      if (audioEnabled && audioRef.current && atEnd) {
-        console.log("🔊 Triggering sound at final frame", current);
+      if (audioEnabled && audioRef.current && (atStart || atEnd)) {
+        console.log("🔊 Triggering sound at frame", current);
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch((err) => {
           console.warn("🔇 Audio play failed:", err);
         });
       }
-
-      prevFrameRef.current = current;
     };
 
     const handleTouchStart = () => {
       if (!audioEnabled) {
         setAudioEnabled(true);
         setShowPrompt(false);
+
+        audioRef.current?.play().catch((err) => {
+          console.warn("🔇 Audio play blocked on touchstart:", err);
+        });
       }
     };
 
@@ -104,6 +108,10 @@ export default function LottieIntro({ onStart }: LottieIntroProps) {
       if (e.code === "Space") {
         setAudioEnabled(true);
         setShowPrompt(false);
+
+        audioRef.current?.play().catch((err) => {
+          console.warn("🔇 Audio play blocked on spacebar:", err);
+        });
       }
     });
     window.addEventListener("touchstart", handleTouchStart);
@@ -223,6 +231,11 @@ export default function LottieIntro({ onStart }: LottieIntroProps) {
 
               setAudioEnabled(true);
               setShowPrompt(false);
+
+              audioRef.current?.play().catch((err) => {
+                console.warn("🔇 Audio play blocked on start button:", err);
+              });
+
               setStarted(true);
             }}
             onMouseEnter={() => setHovered(true)}
