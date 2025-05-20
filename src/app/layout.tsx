@@ -15,26 +15,26 @@ const geistMono = Geist_Mono({
 // ✅ Replaces 'export const metadata' and dynamically injects meta tags
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Mama, In Your Absence",
+    title: "Mama, in Your Absence",
     description: "An intergenerational conversation",
     openGraph: {
-      title: "Mama, In Your Absence",
+      title: "Mama, in Your Absence",
       description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
       url: "https://www.mamainyourabsence.com",
-      siteName: "Mama, In Your Absence",
+      siteName: "Mama, in Your Absence",
       images: [
         {
           url: "https://www.mamainyourabsence.com/preview.png",
           width: 1200,
           height: 630,
-          alt: "Mama, In Your Absence preview image",
+          alt: "Mama, in Your Absence preview image",
         },
       ],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: "Mama, In Your Absence",
+      title: "Mama, in Your Absence",
       description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
       images: ["https://www.mamainyourabsence.com/preview.png"],
     },
