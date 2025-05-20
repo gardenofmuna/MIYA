@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Head from "next/head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,10 +12,34 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Mama, In Your Absence",
-  description: "An intergenerational conversation",
-};
+// ✅ Replaces 'export const metadata' and dynamically injects meta tags
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Mama, In Your Absence",
+    description: "An intergenerational conversation",
+    openGraph: {
+      title: "Mama, In Your Absence",
+      description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
+      url: "https://www.mamainyourabsence.com",
+      siteName: "Mama, In Your Absence",
+      images: [
+        {
+          url: "https://www.mamainyourabsence.com/preview.png",
+          width: 1200,
+          height: 630,
+          alt: "Mama, In Your Absence preview image",
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Mama, In Your Absence",
+      description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
+      images: ["https://www.mamainyourabsence.com/preview.png"],
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -25,33 +48,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
-        {/* Open Graph Meta Tags */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.mamainyourabsence.com/" />
-        <meta property="og:title" content="Mama, In Your Absence" />
-        <meta
-          property="og:description"
-          content="An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy."
-        />
-        <meta
-          property="og:image"
-          content="https://www.mamainyourabsence.com/preview.png"
-        />
-
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Mama, In Your Absence" />
-        <meta
-          name="twitter:description"
-          content="An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy."
-        />
-        <meta
-          name="twitter:image"
-          content="https://www.mamainyourabsence.com/preview.png"
-        />
-      </Head>
-
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
