@@ -1,0 +1,75 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: black;
+  position: relative;
+}
+
+/* 3840x2160 base scene scaled with transform */
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Background image above video */
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3840px;
+  height: 2160px;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Video placed behind window */
+.video {
+  position: absolute;
+  top: 34px;
+  left: 1319px;
+  width: 1193px;
+  height: 779px;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Wrapper for each hotspot image and hover overlay */
+.hotspotWrapper {
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+}
+
+/* Base image visible normally */
+.hotspotBase {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: filter 0.3s ease;
+  pointer-events: auto;
+}
+
+/* Overlay image only visible on hover */
+.hotspotOverlay {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.hotspotWrapper:hover .hotspotOverlay {
+  opacity: 1;
+}
+
+.hotspotWrapper:hover .hotspotBase {
+  filter: drop-shadow(0 0 20px white);
+}

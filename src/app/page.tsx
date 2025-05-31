@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import InteractiveDesk from "../../components/InteractiveDesk";
 import type { LottieIntroProps } from "../../components/LottieIntro";
-import SceneCanvasWrapper from "../../components/SceneCanvasWrapper";
 
 // Dynamic import for LottieIntro
 const LottieIntro = dynamic<LottieIntroProps>(
@@ -25,7 +25,7 @@ export default function HomePage() {
       }}
     >
       {showScene ? (
-        <SceneCanvasWrapper />
+        <InteractiveDesk /> // 👈 NEW COMPONENT HERE
       ) : (
         <LottieIntro onStart={() => setShowScene(true)} />
       )}
