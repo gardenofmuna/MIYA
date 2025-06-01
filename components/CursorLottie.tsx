@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, PanInfo } from "framer-motion";
 import type { AnimationItem } from "lottie-web";
 import Image from "next/image";
-
 import { useScreenSize } from "../src/hooks/useScreenSize";
 import OrientationPrompt from "./OrientationPrompt";
 
 const imageSources = [
+  { src: "/images/Grandma-side-profile.png", alt: "grandma", top: "5%", left: "5%", rotate: -6 },
   { src: "/images/Page-1.png", alt: "page 1", top: "5%", left: "8%", rotate: -4 },
   { src: "/images/Page-2.png", alt: "page 2", top: "25%", left: "60%", rotate: 5 },
   { src: "/images/Page-3.png", alt: "page 3", top: "50%", left: "20%", rotate: -8 },
@@ -19,26 +19,39 @@ const imageSources = [
 
 const getAspectRatio = (alt: string) => {
   if (alt === "polaroid") return 450 / 350;
-  if (alt === "tape recorder") return 300 / 600; // adjust based on your image
+  if (alt === "tape recorder") return 300 / 600;
+  if (alt === "grandma") return 987 / 768;
   return 800 / 600;
 };
 
 export default function CursorLottie() {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<AnimationItem | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
   const [angle, setAngle] = useState(0);
   const [showPrompt, setShowPrompt] = useState(true);
+  const [, setIsPlaying] = useState(false); // Fix: removed unused variable
 
   const { screenSize, isLandscape } = useScreenSize();
-  const shouldPrompt =
-    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
+  const shouldPrompt = (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
 
   const handleDrag = (_: unknown, info: PanInfo) => {
     const rotation = info.offset.x * 0.1 + info.offset.y * 0.1;
     setAngle(rotation);
+  };
+
+  const toggleAudio = () => {
+    if (!audioRef.current) return;
+    if (audioRef.current.paused) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    } else {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
   };
 
   useEffect(() => {
@@ -76,19 +89,12 @@ export default function CursorLottie() {
         if (!animationRef.current) return;
 
         let x = e.clientX;
-
-        if (
-          e.pointerType === "touch" &&
-          (e as unknown as TouchEvent).touches?.[0]
-        ) {
-          x = (e as unknown as TouchEvent).touches[0].clientX;
+        if (e.pointerType === "touch" && (e as PointerEvent & TouchEvent).touches?.[0]) {
+          x = (e as PointerEvent & TouchEvent).touches[0].clientX;
         }
 
         const progress = x / window.innerWidth;
-        animationRef.current.goToAndStop(
-          progress * animationRef.current.totalFrames,
-          true
-        );
+        animationRef.current.goToAndStop(progress * animationRef.current.totalFrames, true);
       };
 
       animation.addEventListener("DOMLoaded", () => {
@@ -103,9 +109,7 @@ export default function CursorLottie() {
     };
   }, []);
 
-  if (shouldPrompt) {
-    return <OrientationPrompt />;
-  }
+  if (shouldPrompt) return <OrientationPrompt />;
 
   return (
     <div
@@ -117,6 +121,25 @@ export default function CursorLottie() {
         touchAction: "none",
       }}
     >
+      <audio ref={audioRef} src="/Muna%20letter.mp3" preload="auto" />
+
+      <motion.img
+        src="/images/play-pause.png"
+        alt="Play/Pause"
+        onClick={toggleAudio}
+        animate={{ opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "fixed",
+          top: "2%",
+          right: "2%",
+          width: "60px",
+          cursor: "pointer",
+          zIndex: 10,
+          pointerEvents: "auto",
+        }}
+      />
+
       {showPrompt && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -166,7 +189,7 @@ export default function CursorLottie() {
               top: img.top,
               left: img.left,
               rotate: `${img.rotate}deg`,
-              zIndex: 1,
+              zIndex: img.alt === "grandma" ? 0.5 : 1,
               width,
               maxWidth,
               touchAction: "none",
@@ -185,6 +208,7 @@ export default function CursorLottie() {
                 fill
                 style={{
                   objectFit: "contain",
+                  opacity: img.alt === "grandma" ? 0.98 : 1,
                   pointerEvents: "none",
                   userSelect: "none",
                 }}

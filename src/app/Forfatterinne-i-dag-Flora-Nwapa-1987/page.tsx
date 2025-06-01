@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
@@ -65,10 +65,8 @@ function TVScene({
         tex.minFilter = LinearFilter;
         tex.magFilter = LinearFilter;
         tex.format = RGBFormat;
-
-        // ✅ Simulate zoomed-out video by reducing visible area
-        tex.repeat.set(-2.0, 2.0); // scale to 80% of surface
-        tex.offset.set(1.5, -0.5); // center it
+        tex.repeat.set(-2.0, 2.0);
+        tex.offset.set(1.5, -0.5);
         tex.wrapS = tex.wrapT = ClampToEdgeWrapping;
 
         setVideoTexture(tex);
@@ -157,7 +155,7 @@ export default function AboutPage() {
     <>
       <video
         ref={videoRef}
-        src="/videos/vhs_clip.mp4"
+        src="https://miya-assets.b-cdn.net/Forfatterinne%20i%20dag%20-%20Forfatterinne%20i%20dag%EF%BC%9A%20Flora%20Nwapa%20%5BFOLA00000687%5D%20copy.mp4"
         muted={isMuted}
         autoPlay
         loop
