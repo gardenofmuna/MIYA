@@ -1,3 +1,4 @@
+/* Fullscreen wrapper */
 .wrapper {
   width: 100vw;
   height: 100vh;
@@ -6,14 +7,14 @@
   position: relative;
 }
 
-/* 3840x2160 base scene scaled with transform */
+/* Base 3840x2160 scene scaled by transform */
 .scene {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-/* Background image above video */
+/* Background image over the video */
 .bg {
   position: absolute;
   top: 0;
@@ -25,7 +26,7 @@
   pointer-events: none;
 }
 
-/* Video placed behind window */
+/* Background video below everything */
 .video {
   position: absolute;
   top: 34px;
@@ -37,14 +38,26 @@
   pointer-events: none;
 }
 
-/* Wrapper for each hotspot image and hover overlay */
+/* Music gif perfectly sized to match speaker, floating just above */
+.musicGif {
+  position: absolute;
+  top: 19.5%;           /* slightly above 22.64% */
+  left: 91.93%;         /* same as speaker */
+  width: 5.94%;         /* same as speaker */
+  height: 6.25%;        /* same as speaker */
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Hotspot wrapper */
 .hotspotWrapper {
   position: absolute;
   z-index: 10;
   cursor: pointer;
 }
 
-/* Base image visible normally */
+/* Base hotspot image */
 .hotspotBase {
   width: 100%;
   height: 100%;
@@ -53,7 +66,7 @@
   pointer-events: auto;
 }
 
-/* Overlay image only visible on hover */
+/* Hover overlay */
 .hotspotOverlay {
   width: 100%;
   height: 100%;

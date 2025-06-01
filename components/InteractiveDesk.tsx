@@ -101,7 +101,7 @@ export default function InteractiveDesk() {
           height: "2160px",
         }}
       >
-        {/* 🎥 Video window, behind background */}
+        {/* 🎥 Video background */}
         <video
           autoPlay
           muted
@@ -111,10 +111,17 @@ export default function InteractiveDesk() {
           src="https://miya-assets.b-cdn.net/skyloop.mp4"
         />
 
-        {/* 📷 Background image above video */}
+        {/* 📷 Static background */}
         <img src="/background.png" alt="Desk background" className={styles.bg} />
 
-        {/* 📌 Hoverable hotspots with overlays */}
+        {/* 🎵 Music gif over speaker */}
+        <img
+          src="/music.gif"
+          alt="Music animation"
+          className={styles.musicGif}
+        />
+
+        {/* 📌 Interactive hotspots */}
         {hotspots.map(({ id, src, overlay, link, top, left, width, height }) => (
           <div
             key={id}
