@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useScreenSize } from "../src/hooks/useScreenSize";
 import OrientationPrompt from "./OrientationPrompt";
 import styles from "./InteractiveDesk.module.css";
+import { motion } from "framer-motion";
 
 const hotspots = [
   {
@@ -91,7 +92,12 @@ export default function InteractiveDesk() {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <motion.div
+      className={styles.wrapper}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 5, ease: "easeOut" }}
+    >
       <div
         className={styles.scene}
         style={{
@@ -112,7 +118,11 @@ export default function InteractiveDesk() {
         />
 
         {/* 📷 Static background */}
-        <img src="/background.png" alt="Desk background" className={styles.bg} />
+        <img
+          src="/background.png"
+          alt="Desk background"
+          className={styles.bg}
+        />
 
         {/* 🎵 Music gif over speaker */}
         <img
@@ -134,6 +144,6 @@ export default function InteractiveDesk() {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

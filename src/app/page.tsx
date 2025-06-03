@@ -3,16 +3,16 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import InteractiveDesk from "../../components/InteractiveDesk";
+import LoaderVideo from "../../components/LoaderVideo"; // 👈 You'll create this below
 import type { LottieIntroProps } from "../../components/LottieIntro";
 
-// Dynamic import for LottieIntro
 const LottieIntro = dynamic<LottieIntroProps>(
   () => import("../../components/LottieIntro"),
   { ssr: false }
 );
 
 export default function HomePage() {
-  const [showScene, setShowScene] = useState(false);
+  const [stage, setStage] = useState<"intro" | "loader" | "desk">("intro");
 
   return (
     <div
@@ -24,11 +24,9 @@ export default function HomePage() {
         position: "relative",
       }}
     >
-      {showScene ? (
-        <InteractiveDesk /> // 👈 NEW COMPONENT HERE
-      ) : (
-        <LottieIntro onStart={() => setShowScene(true)} />
-      )}
+      {stage === "intro" && <LottieIntro onStart={() => setStage("loader")} />}
+      {stage === "loader" && <LoaderVideo onFinish={() => setStage("desk")} />}
+      {stage === "desk" && <InteractiveDesk />}
     </div>
   );
 }
