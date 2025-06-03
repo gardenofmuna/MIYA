@@ -87,7 +87,7 @@ export default function LoaderVideo({ onFinish }: { onFinish: () => void }) {
       {/* 🎥 Video */}
       <video
         ref={videoRef}
-        src="/LoadingIntroSequence.mp4"
+        src="https://miya-assets.b-cdn.net/LoadingIntroSequence.mp4"
         style={{
           width: "100%",
           height: "100%",
