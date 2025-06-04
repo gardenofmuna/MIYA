@@ -6,6 +6,7 @@ import { useScreenSize } from "../src/hooks/useScreenSize";
 import OrientationPrompt from "./OrientationPrompt";
 import styles from "./InteractiveDesk.module.css";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const hotspots = [
   {
@@ -118,17 +119,22 @@ export default function InteractiveDesk() {
         />
 
         {/* 📷 Static background */}
-        <img
+        <Image
           src="/background.png"
           alt="Desk background"
           className={styles.bg}
+          fill
+          unoptimized
         />
 
         {/* 🎵 Music gif over speaker */}
-        <img
+        <Image
           src="/music.gif"
           alt="Music animation"
           className={styles.musicGif}
+          width={100}
+          height={100}
+          unoptimized
         />
 
         {/* 📌 Interactive hotspots */}
@@ -139,8 +145,20 @@ export default function InteractiveDesk() {
             style={{ top, left, width, height }}
             onClick={() => router.push(link)}
           >
-            <img src={src} className={styles.hotspotBase} />
-            <img src={overlay} className={styles.hotspotOverlay} />
+            <Image
+              src={src}
+              alt={`${id} base`}
+              className={styles.hotspotBase}
+              fill
+              unoptimized
+            />
+            <Image
+              src={overlay}
+              alt={`${id} overlay`}
+              className={styles.hotspotOverlay}
+              fill
+              unoptimized
+            />
           </div>
         ))}
       </div>

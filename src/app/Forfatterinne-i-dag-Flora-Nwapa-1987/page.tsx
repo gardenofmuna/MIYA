@@ -21,30 +21,40 @@ import {
   DoubleSide,
   ClampToEdgeWrapping,
 } from "three";
+import { OrbitControls as OrbitControlsType } from "three-stdlib";
 import { GLTF } from "three-stdlib";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 
 import { useScreenSize } from "../../hooks/useScreenSize";
 import OrientationPrompt from "../../../components/OrientationPrompt";
+import Loader from "../../../components/Loader";
 
 type GLTFResult = GLTF & {
   nodes: {
     VideoScreen_Object?: Mesh<BufferGeometry, Material | Material[]>;
     VHS_Tape?: Mesh;
+    Wall_Left?: Mesh<BufferGeometry, Material | Material[]>;
   };
 };
 
 function TVScene({
   videoRef,
+  onLoaded,
 }: {
   videoRef: React.RefObject<HTMLVideoElement>;
+  onLoaded: () => void;
 }) {
   const group = useRef<Group>(null);
-  const { scene, animations, nodes } = useGLTF("/models/tv_vhs.glb") as GLTFResult;
+  const { scene, animations, nodes } = useGLTF("https://miya-assets.b-cdn.net/TV.glb") as GLTFResult;
   const { actions } = useAnimations(animations, group);
+
   const [videoTexture, setVideoTexture] = useState<VideoTexture | null>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [showButton, setShowButton] = useState(true);
+
+  useEffect(() => {
+    if (scene) onLoaded();
+  }, [scene, onLoaded]);
 
   useFrame(() => {
     if (videoTexture) videoTexture.needsUpdate = true;
@@ -93,6 +103,8 @@ function TVScene({
 
       {nodes.VideoScreen_Object && (
         <mesh
+          castShadow
+          receiveShadow
           geometry={nodes.VideoScreen_Object.geometry}
           position={nodes.VideoScreen_Object.position}
           rotation={nodes.VideoScreen_Object.rotation}
@@ -108,39 +120,52 @@ function TVScene({
         </mesh>
       )}
 
+      {nodes.Wall_Left && (
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.Wall_Left.geometry}
+          position={nodes.Wall_Left.position}
+          rotation={nodes.Wall_Left.rotation}
+          scale={nodes.Wall_Left.scale}
+        >
+          <meshStandardMaterial color="white" />
+        </mesh>
+      )}
+
       {showButton && (
         <Html position={[0, 0.5, 1]} distanceFactor={5} center>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <button
-              onClick={handlePlay}
-              style={{
-                background: "#000",
-                color: "#fff",
-                padding: "12px 20px",
-                borderRadius: "8px",
-                border: "none",
-                fontWeight: "bold",
-                fontSize: "1rem",
-                cursor: "pointer",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-              }}
-            >
-              Insert VHS
-            </button>
-          </div>
+          <button
+            onClick={handlePlay}
+            style={{
+              background: "#000",
+              color: "#fff",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              border: "none",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+            }}
+          >
+            Insert VHS
+          </button>
         </Html>
       )}
     </group>
   );
 }
 
-export default function AboutPage() {
+export default function ContactPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const controlsRef = useRef<OrbitControlsType | null>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [sceneLoaded, setSceneLoaded] = useState(false);
 
   const { screenSize, isLandscape } = useScreenSize();
-  const shouldPrompt =
-    (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
+  const shouldPrompt = (screenSize === "mobile" || screenSize === "tablet") && !isLandscape;
 
   const handleToggleMute = () => {
     setIsMuted((prev) => !prev);
@@ -149,10 +174,24 @@ export default function AboutPage() {
     }
   };
 
+  const handleTogglePlayPause = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPaused(false);
+      } else {
+        videoRef.current.pause();
+        setIsPaused(true);
+      }
+    }
+  };
+
   if (shouldPrompt) return <OrientationPrompt />;
 
   return (
     <>
+      <Loader />
+
       <video
         ref={videoRef}
         src="https://miya-assets.b-cdn.net/Forfatterinne%20i%20dag%20-%20Forfatterinne%20i%20dag%EF%BC%9A%20Flora%20Nwapa%20%5BFOLA00000687%5D%20copy.mp4"
@@ -165,53 +204,95 @@ export default function AboutPage() {
         style={{ display: "none" }}
       />
 
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "20px",
-          zIndex: 9999,
-        }}
-      >
-        <button
-          onClick={handleToggleMute}
+      {sceneLoaded && (
+        <div
           style={{
-            background: "#000",
-            color: "#fff",
-            padding: "10px 16px",
-            borderRadius: "6px",
-            border: "none",
-            fontWeight: "bold",
-            fontSize: "0.9rem",
-            cursor: "pointer",
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            zIndex: 9999,
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
           }}
         >
-          {isMuted ? "Unmute" : "Mute"}
-        </button>
-      </div>
+          <button
+            onClick={handleToggleMute}
+            style={{
+              background: "#000",
+              color: "#fff",
+              padding: "10px 16px",
+              borderRadius: "6px",
+              border: "none",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+              cursor: "pointer",
+            }}
+          >
+            {isMuted ? "Unmute" : "Mute"}
+          </button>
+
+          <button
+            onClick={handleTogglePlayPause}
+            style={{
+              background: "#000",
+              color: "#fff",
+              padding: "10px 16px",
+              borderRadius: "6px",
+              border: "none",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+              cursor: "pointer",
+            }}
+          >
+            {isPaused ? "Play" : "Pause"}
+          </button>
+        </div>
+      )}
 
       <div style={{ height: "100vh", background: "#2c2c2c" }}>
-        <Canvas camera={{ position: [0, 2, 8], fov: 35 }}>
+        <Canvas shadows camera={{ position: [4.02, 1.87, 9.69], fov: 35 }}>
           <ambientLight intensity={0.5} />
-          <hemisphereLight
-            color="#ffffff"
-            groundColor="#222222"
-            intensity={0.8}
-          />
+          <hemisphereLight color="#ffffff" groundColor="#222222" intensity={0.8} />
           <directionalLight
-            position={[5, 10, 5]}
-            intensity={1.2}
             castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
+            position={[10, 15, 10]}
+            intensity={1.4}
+            color="#fff9d6"
+            shadow-mapSize-width={4096}
+            shadow-mapSize-height={4096}
+            shadow-bias={-0.001}
           />
-          <Environment preset="city" />
+          <spotLight
+            position={[4, 5, 9]}
+            angle={0.35}
+            distance={5}
+            intensity={10}
+            penumbra={0.5}
+            color="#ffffff"
+            castShadow
+            shadow-mapSize-width={4096}
+            shadow-mapSize-height={4096}
+            shadow-bias={-0.001}
+          />
+
+          <Environment files="/the_sky_is_on_fire_4k.hdr" background="only" />
 
           <Suspense fallback={null}>
-            <TVScene videoRef={videoRef} />
+            <TVScene videoRef={videoRef} onLoaded={() => setSceneLoaded(true)} />
           </Suspense>
 
-          <OrbitControls enablePan={false} />
+          <OrbitControls
+            ref={controlsRef}
+            target={[0, 0, 0]}
+            minDistance={8}
+            maxDistance={11.2}
+            minPolarAngle={1.395}
+            maxPolarAngle={1.395}
+            minAzimuthAngle={0.293}
+            maxAzimuthAngle={0.493}
+            enablePan={false}
+          />
         </Canvas>
       </div>
     </>

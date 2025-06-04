@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint"
   },
@@ -23,9 +24,11 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@fontsource/homemade-apple": "^5.2.5",
     "@react-three/drei": "^10.0.6",
     "@react-three/fiber": "^9.1.2",
     "framer-motion": "^12.15.0",
+    "html-to-image": "^1.11.13",
     "lottie-web": "^5.12.2",
     "next": "^15.3.1",
     "react": "^19.1.0",

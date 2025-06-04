@@ -12,14 +12,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// ✅ Replaces 'export const metadata' and dynamically injects meta tags
+// ✅ Dynamically generate SEO + social + Open Graph tags
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Mama, in Your Absence",
     description: "An intergenerational conversation",
     openGraph: {
       title: "Mama, in Your Absence",
-      description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
+      description:
+        "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
       url: "https://www.mamainyourabsence.com",
       siteName: "Mama, in Your Absence",
       images: [
@@ -35,7 +36,8 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: "Mama, in Your Absence",
-      description: "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
+      description:
+        "An interactive documentary by Munachiso Nzeribe exploring memory, matriarchy, and legacy.",
       images: ["https://www.mamainyourabsence.com/preview.png"],
     },
   };
@@ -48,6 +50,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ PWA & installability support */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-512.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
