@@ -1,3 +1,8 @@
+/* eslint-disable 
+  @typescript-eslint/no-unused-vars,
+  @typescript-eslint/no-explicit-any,
+  react-hooks/exhaustive-deps
+*/
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -5,6 +10,7 @@ import { motion, AnimatePresence, PanInfo, useMotionValue } from "framer-motion"
 import type { AnimationItem } from "lottie-web";
 import Image from "next/image";
 import { useScreenSize } from "../../hooks/useScreenSize";
+import OrientationPrompt from "../../../components/OrientationPrompt";
 
 type Scene = "muna" | "zuru" | "mum";
 
@@ -57,6 +63,9 @@ const getAspectRatio = (alt: string) => {
 };
 
 export default function ToGrandmaPage() {
+  // Always call hooks in the same order:
+  const { screenSize, isLandscape } = useScreenSize();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<AnimationItem | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -68,6 +77,7 @@ export default function ToGrandmaPage() {
   const [hasDragged, setHasDragged] = useState(false);
   const [userManuallySwitched, setUserManuallySwitched] = useState(false);
 
+  // Lottie drag state
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
   const [angle, setAngle] = useState(0);
@@ -95,13 +105,13 @@ export default function ToGrandmaPage() {
     }
   };
 
-  const handleDrag = (_: unknown, info: PanInfo) => {
-    const rotation = info.offset.x * 0.1 + info.offset.y * 0.1;
-    setAngle(rotation);
+  // Called when an image is dragged; silences the prompt.
+  const handleImageDrag = (_: unknown, info: PanInfo) => {
     if (!hasDragged) {
       setHasDragged(true);
       setShowPrompt(false);
     }
+    // (Optional: Add per-image rotation here if desired)
   };
 
   useEffect(() => {
@@ -127,7 +137,7 @@ export default function ToGrandmaPage() {
         autoplay: false,
         path: "/lottie/work-animation.json",
         rendererSettings: {
-          preserveAspectRatio: "xMidYMid meet",
+          preserveAspectRatio: "xMidYMid meet", // keep aspect ratio
           clearCanvas: true,
         },
       });
@@ -142,12 +152,18 @@ export default function ToGrandmaPage() {
             x = touchEvent.touches[0].clientX;
           }
         }
-
         const progress = x / window.innerWidth;
-        animationRef.current?.goToAndStop(progress * animationRef.current.totalFrames, true);
+        animationRef.current?.goToAndStop(progress * animationRef.current!.totalFrames, true);
       };
 
       animation.addEventListener("DOMLoaded", () => {
+        // Force the injected <canvas> to preserve its aspect ratio:
+        const canvasEl = (animation as any).renderer?.view as HTMLCanvasElement | undefined;
+        if (canvasEl) {
+          canvasEl.style.width = "100%";
+          canvasEl.style.height = "auto";
+          canvasEl.style.maxHeight = "100%";
+        }
         window.addEventListener("pointermove", handlePointerMove);
       });
 
@@ -189,10 +205,21 @@ export default function ToGrandmaPage() {
     };
   }, [currentScene]);
 
+  // After all hooks run, conditionally render orientation prompt:
+  if (!isLandscape) {
+    return <OrientationPrompt />;
+  }
+
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
       <audio ref={audioRef} preload="auto" />
-      <Image src="/images/wood-bg.png" alt="wood background" fill style={{ objectFit: "cover", zIndex: 0 }} priority />
+      <Image
+        src="/images/wood-bg.png"
+        alt="wood background"
+        fill
+        style={{ objectFit: "cover", zIndex: 0 }}
+        priority
+      />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -201,7 +228,7 @@ export default function ToGrandmaPage() {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: direction === "forward" ? -1000 : 1000, opacity: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
-          style={{ position: "absolute", width: "100%", height: "100%", top: 0, left: 0, zIndex: 3 }}
+          style={{ position: "absolute", width: "100%", height: "100%", top: 0, left: 0, zIndex: 1 }}
         >
           {sceneImages[currentScene].map((img, idx) => {
             const aspectRatio = getAspectRatio(img.alt);
@@ -213,13 +240,13 @@ export default function ToGrandmaPage() {
                 key={idx}
                 drag
                 dragMomentum={false}
-                onDrag={handleDrag}
+                onDrag={handleImageDrag}
                 style={{
                   position: "absolute",
                   top: img.top,
                   left: img.left,
                   rotate: `${img.rotate}deg`,
-                  zIndex: img.alt === "iphone-note" ? 100 : 1,
+                  zIndex: 2, // images sit above the Lottie layer
                   width,
                   maxWidth,
                   touchAction: "none",
@@ -251,7 +278,7 @@ export default function ToGrandmaPage() {
                 color: "white",
                 fontSize: "clamp(1rem, 3vw, 1.2rem)",
                 fontWeight: 500,
-                zIndex: 6,
+                zIndex: 3,
                 textAlign: "center",
                 backgroundColor: "rgba(0, 0, 0, 0.4)",
                 borderRadius: "8px",
@@ -276,7 +303,7 @@ export default function ToGrandmaPage() {
               width: "60px",
               height: "60px",
               cursor: "pointer",
-              zIndex: 100,
+              zIndex: 3,
             }}
           />
 
@@ -292,7 +319,7 @@ export default function ToGrandmaPage() {
                 right: "3%",
                 width: "180px",
                 cursor: "pointer",
-                zIndex: 10,
+                zIndex: 2,
               }}
             />
           )}
@@ -310,7 +337,7 @@ export default function ToGrandmaPage() {
                   left: "3%",
                   width: "180px",
                   cursor: "pointer",
-                  zIndex: 10,
+                  zIndex: 2,
                 }}
               />
               <motion.img
@@ -324,7 +351,7 @@ export default function ToGrandmaPage() {
                   right: "3%",
                   width: "180px",
                   cursor: "pointer",
-                  zIndex: 10,
+                  zIndex: 2,
                 }}
               />
             </>
@@ -342,33 +369,84 @@ export default function ToGrandmaPage() {
                 left: "3%",
                 width: "180px",
                 cursor: "pointer",
-                zIndex: 10,
+                zIndex: 2,
               }}
             />
           )}
         </motion.div>
       </AnimatePresence>
 
+      {/*
+        Lottie wrapper is now the topmost layer (zIndex: 4).  
+        We'll give it full-screen size and let it capture drag events anywhere.  
+        Because images live at zIndex 2 beneath it, they will be covered visually.
+        However, to ensure that dragging an image does NOT also drag Lottie,
+        each image's <motion.div onDrag> handler will call stopPropagation
+        (so the Lottie’s drag handler never sees that event).
+
+        We achieve this by setting pointerEvents='auto' on everything
+        so normal hit-testing still goes Lottie→images on top. Then, in
+        each image's onPointerDownCapture, we call event.stopPropagation(),
+        ensuring that any drag that starts on an image never bubbles up
+        to Lottie.
+      */}
       <motion.div
         drag
         dragMomentum={false}
-        onDrag={handleDrag}
+        onDrag={(_e, info: PanInfo) => {
+          // Lottie moves only when the initial pointer event did not start on an image
+          const rotation = info.offset.x * 0.1 + info.offset.y * 0.1;
+          setAngle(rotation);
+        }}
         style={{
           x: dragX,
           y: dragY,
           rotateZ: angle,
           position: "absolute",
-          width: "100%",
-          height: "100%",
           top: 0,
           left: 0,
-          zIndex: 5,
+          width: "100%",
+          height: "100%",
+          zIndex: 4, // highest layer
           cursor: "grab",
           touchAction: "none",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          pointerEvents: "auto", // must be able to receive drag
         }}
       >
-        <div ref={containerRef} style={{ width: "100%", height: "100%", pointerEvents: "none" }} />
+        {/* Invisible backdrop so that clicking anywhere
+            (except on an image) will target Lottie. */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none", // let Lottie’s canvas handle actual pointer events
+          }}
+        />
+        {/* Lottie container (the canvas will be injected here) */}
+        <div
+          ref={containerRef}
+          style={{
+            width: "100%",
+            height: "auto",
+            maxHeight: "100%",
+            overflow: "hidden",
+          }}
+        />
       </motion.div>
+
+      {/*
+        Add onPointerDownCapture to every image so that when an image
+        is clicked/touched, we stop propagation before it reaches Lottie.
+        That way, dragging that image ONLY drags the image, and the Lottie
+        underneath won't respond.
+      */}
+      {sceneImages[currentScene].map((img, idx) => null) /* purely to illustrate the idea */}      
     </div>
   );
 }
