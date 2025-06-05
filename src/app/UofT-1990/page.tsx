@@ -24,6 +24,7 @@ import {
 import { OrbitControls as OrbitControlsType } from "three-stdlib";
 import { GLTF } from "three-stdlib";
 import { Suspense, useRef, useState, useEffect } from "react";
+import Hls from "hls.js";
 
 import { useScreenSize } from "../../hooks/useScreenSize";
 import OrientationPrompt from "../../../components/OrientationPrompt";
@@ -45,7 +46,7 @@ function TVScene({
   onLoaded: () => void;
 }) {
   const group = useRef<Group>(null);
-  const { scene, animations, nodes } = useGLTF("https://miya-assets.b-cdn.net/TV.glb") as GLTFResult;
+  const { scene, animations, nodes } = useGLTF("https://miya-assets.b-cdn.net/TV2.glb") as GLTFResult;
   const { actions } = useAnimations(animations, group);
 
   const [videoTexture, setVideoTexture] = useState<VideoTexture | null>(null);
@@ -65,7 +66,6 @@ function TVScene({
 
     const video = videoRef.current;
     video.crossOrigin = "anonymous";
-    video.load();
 
     video
       .play()
@@ -186,6 +186,26 @@ export default function ContactPage() {
     }
   };
 
+  useEffect(() => {
+    const video = videoRef.current;
+    const src = "https://vz-67d4e9fb-0bc.b-cdn.net/b82e8537-7b53-4ba5-bfce-af9672da6027/playlist.m3u8";
+
+    if (!video) return;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(src);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(console.error);
+      });
+      return () => hls.destroy();
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src;
+      video.play().catch(console.error);
+    }
+  }, []);
+
   if (shouldPrompt) return <OrientationPrompt />;
 
   return (
@@ -194,7 +214,6 @@ export default function ContactPage() {
 
       <video
         ref={videoRef}
-        src="https://miya-assets.b-cdn.net/UofT-Flora-Nwapa.mp4"
         muted={isMuted}
         autoPlay
         loop
@@ -251,7 +270,7 @@ export default function ContactPage() {
       )}
 
       <div style={{ height: "100vh", background: "#2c2c2c" }}>
-        <Canvas shadows camera={{ position: [4.02, 1.87, 9.69], fov: 35 }}>
+        <Canvas shadows camera={{ position: [3.18499, 1.95879, 10.55741], fov: 35 }}>
           <ambientLight intensity={0.5} />
           <hemisphereLight color="#ffffff" groundColor="#222222" intensity={0.8} />
           <directionalLight

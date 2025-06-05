@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useScreenSize } from "../src/hooks/useScreenSize";
 import OrientationPrompt from "./OrientationPrompt";
 import styles from "./InteractiveDesk.module.css";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Hls from "hls.js";
 
 const hotspots = [
   {
@@ -75,6 +76,7 @@ export default function InteractiveDesk() {
   const router = useRouter();
   const { screenSize, isLandscape } = useScreenSize();
   const [scale, setScale] = useState(1);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const updateScale = () => {
@@ -86,6 +88,28 @@ export default function InteractiveDesk() {
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
+  }, []);
+
+  // ✅ HLS video setup
+  useEffect(() => {
+    const video = videoRef.current;
+    const src =
+      "https://vz-67d4e9fb-0bc.b-cdn.net/1d87ef07-684d-4897-944c-d6ed79124b9a/playlist.m3u8";
+
+    if (!video) return;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(src);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(console.error);
+      });
+      return () => hls.destroy();
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src;
+      video.play().catch(console.error);
+    }
   }, []);
 
   if (screenSize === "mobile" && !isLandscape) {
@@ -108,26 +132,27 @@ export default function InteractiveDesk() {
           height: "2160px",
         }}
       >
-        {/* 🎥 Video background */}
+        {/* 🎥 Bunny HLS Video Background */}
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
+          preload="auto"
           className={styles.video}
-          src="https://miya-assets.b-cdn.net/skyloop.mp4"
         />
 
-        {/* 📷 Static background */}
+        {/* 📷 Optimized Static background image (WebP) */}
         <Image
-          src="/background.png"
+          src="/background.webp"
           alt="Desk background"
           className={styles.bg}
           fill
           unoptimized
         />
 
-        {/* 🎵 Music gif over speaker */}
+        {/* 🎵 Music gif */}
         <Image
           src="/music.gif"
           alt="Music animation"

@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Hls from "hls.js";
 import Image from "next/image";
 
 export default function LoaderVideo({ onFinish }: { onFinish: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [progress, setProgress] = useState(0); // current time
+  const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
+    const hls = new Hls();
+    const src = "https://vz-67d4e9fb-0bc.b-cdn.net/cfa4c13f-437e-450c-93a0-f905df2d754e/playlist.m3u8";
 
     const updateProgress = () => {
       if (video && video.duration > 0) {
@@ -29,13 +32,25 @@ export default function LoaderVideo({ onFinish }: { onFinish: () => void }) {
 
     if (video) {
       video.muted = true;
-      video.play().catch(console.error);
+
+      if (Hls.isSupported()) {
+        hls.loadSource(src);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(console.error);
+        });
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = src;
+        video.play().catch(console.error);
+      }
+
       video.addEventListener("ended", handleEnded);
       video.addEventListener("timeupdate", updateProgress);
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
     }
 
     return () => {
+      hls.destroy();
       video?.removeEventListener("ended", handleEnded);
       video?.removeEventListener("timeupdate", updateProgress);
       video?.removeEventListener("loadedmetadata", handleLoadedMetadata);
@@ -84,20 +99,21 @@ export default function LoaderVideo({ onFinish }: { onFinish: () => void }) {
         overflow: "hidden",
       }}
     >
-      {/* 🎥 Video */}
+      {/* 🎥 Bunny HLS Video */}
       <video
         ref={videoRef}
-        src="https://miya-assets.b-cdn.net/LoadingIntroSequence.mp4"
+        autoPlay
+        playsInline
+        muted
+        preload="auto"
         style={{
           width: "100%",
           height: "100%",
           objectFit: "cover",
         }}
-        autoPlay
-        playsInline
       />
 
-      {/* 🔇 Mute/Unmute Button (Text) */}
+      {/* 🔇 Mute/Unmute Button */}
       <button
         onClick={toggleMute}
         style={{
@@ -140,7 +156,7 @@ export default function LoaderVideo({ onFinish }: { onFinish: () => void }) {
         />
       </button>
 
-      {/* 📶 % Text Display */}
+      {/* ⏳ % Display */}
       <div
         style={{
           position: "absolute",

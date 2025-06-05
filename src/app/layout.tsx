@@ -51,11 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* ✅ PWA & installability support */}
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
-        <link rel="icon" href="/icon-192.png" />
-        <link rel="apple-touch-icon" href="/icon-512.png" />
+        {/* Removed PWA manifest and app icon links */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
