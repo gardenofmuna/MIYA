@@ -5,7 +5,18 @@ import { motion, AnimatePresence, PanInfo, useMotionValue } from "framer-motion"
 import type { AnimationItem } from "lottie-web";
 import Image from "next/image";
 
-const sceneImages: Record<string, any[]> = {
+type Scene = "muna" | "zuru" | "mum";
+
+type SceneImage = {
+  src: string;
+  alt: string;
+  top: string;
+  left: string;
+  rotate: number;
+  width?: string;
+};
+
+const sceneImages: Record<Scene, SceneImage[]> = {
   muna: [
     { src: "/images/Grandma-side-profile.png", alt: "grandma", top: "5%", left: "5%", rotate: -6 },
     { src: "/images/Page-1.png", alt: "page 1", top: "5%", left: "8%", rotate: -4 },
@@ -49,7 +60,7 @@ export default function ToGrandmaPage() {
   const animationRef = useRef<AnimationItem | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const [currentScene, setCurrentScene] = useState<"muna" | "zuru" | "mum">("muna");
+  const [currentScene, setCurrentScene] = useState<Scene>("muna");
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
@@ -60,10 +71,16 @@ export default function ToGrandmaPage() {
   const dragY = useMotionValue(0);
   const [angle, setAngle] = useState(0);
 
-  const getNextScene = (scene: typeof currentScene) => {
+  const getNextScene = (scene: Scene): Scene => {
     if (scene === "muna") return "zuru";
     if (scene === "zuru") return "mum";
     return "mum";
+  };
+
+  const handleSceneChange = (target: Scene) => {
+    setDirection(target === "muna" ? "backward" : "forward");
+    setCurrentScene(target);
+    setUserManuallySwitched(true);
   };
 
   const toggleAudio = () => {
@@ -77,12 +94,6 @@ export default function ToGrandmaPage() {
     }
   };
 
-  const handleSceneChange = (target: "muna" | "zuru" | "mum") => {
-    setDirection(target === "muna" ? "backward" : "forward");
-    setCurrentScene(target);
-    setUserManuallySwitched(true);
-  };
-
   const handleDrag = (_: unknown, info: PanInfo) => {
     const rotation = info.offset.x * 0.1 + info.offset.y * 0.1;
     setAngle(rotation);
@@ -91,6 +102,13 @@ export default function ToGrandmaPage() {
       setShowPrompt(false);
     }
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!hasDragged) setShowPrompt(false);
+    }, 10000);
+    return () => clearTimeout(timeout);
+  }, [hasDragged]);
 
   useEffect(() => {
     import("lottie-web").then((lottieModule) => {
@@ -116,13 +134,16 @@ export default function ToGrandmaPage() {
       animationRef.current = animation;
 
       const handlePointerMove = (e: PointerEvent) => {
-        if (!animationRef.current) return;
         let x = e.clientX;
-        if (e.pointerType === "touch" && (e as PointerEvent & TouchEvent).touches?.[0]) {
-          x = (e as PointerEvent & TouchEvent).touches[0].clientX;
+        if (e.pointerType === "touch") {
+          const touchEvent = e as unknown as TouchEvent;
+          if (touchEvent.touches?.[0]) {
+            x = touchEvent.touches[0].clientX;
+          }
         }
+
         const progress = x / window.innerWidth;
-        animationRef.current.goToAndStop(progress * animationRef.current.totalFrames, true);
+        animationRef.current?.goToAndStop(progress * animationRef.current.totalFrames, true);
       };
 
       animation.addEventListener("DOMLoaded", () => {
@@ -137,16 +158,18 @@ export default function ToGrandmaPage() {
   }, []);
 
   useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.pause();
-    audioRef.current.currentTime = 0;
-    audioRef.current.src =
+    const audioEl = audioRef.current;
+    if (!audioEl) return;
+
+    audioEl.pause();
+    audioEl.currentTime = 0;
+    audioEl.src =
       currentScene === "muna"
         ? "/Muna%20letter.mp3"
         : currentScene === "zuru"
         ? "/ZURU-NARRATION.mp3"
         : "/MUM-NARRATION-igbo.mp3";
-    audioRef.current.load();
+    audioEl.load();
     setIsPlaying(false);
     setUserManuallySwitched(false);
 
@@ -159,9 +182,9 @@ export default function ToGrandmaPage() {
       }
     };
 
-    audioRef.current.addEventListener("ended", onEnded);
+    audioEl.addEventListener("ended", onEnded);
     return () => {
-      audioRef.current?.removeEventListener("ended", onEnded);
+      audioEl.removeEventListener("ended", onEnded);
     };
   }, [currentScene]);
 
@@ -189,7 +212,6 @@ export default function ToGrandmaPage() {
                 key={idx}
                 drag
                 dragMomentum={false}
-                dragTransition={{ bounceStiffness: 70, bounceDamping: 20 }}
                 onDrag={handleDrag}
                 style={{
                   position: "absolute",
@@ -228,7 +250,7 @@ export default function ToGrandmaPage() {
                 color: "white",
                 fontSize: "clamp(1rem, 3vw, 1.2rem)",
                 fontWeight: 500,
-                zIndex: 5,
+                zIndex: 6,
                 textAlign: "center",
                 backgroundColor: "rgba(0, 0, 0, 0.4)",
                 borderRadius: "8px",
@@ -245,7 +267,7 @@ export default function ToGrandmaPage() {
             alt="Play/Pause"
             onClick={toggleAudio}
             animate={!isPlaying ? { opacity: [0.6, 1, 0.6] } : { opacity: 1 }}
-            transition={!isPlaying ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
+            transition={!isPlaying ? { duration: 1.5, repeat: Infinity } : { duration: 0.3 }}
             style={{
               position: "fixed",
               top: "2%",
@@ -263,8 +285,14 @@ export default function ToGrandmaPage() {
               alt="Next: Zuru's Letter"
               onClick={() => handleSceneChange("zuru")}
               whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              style={{ position: "absolute", bottom: "3%", right: "3%", width: "180px", cursor: "pointer", zIndex: 10 }}
+              style={{
+                position: "absolute",
+                bottom: "3%",
+                right: "3%",
+                width: "180px",
+                cursor: "pointer",
+                zIndex: 10,
+              }}
             />
           )}
 
@@ -275,16 +303,28 @@ export default function ToGrandmaPage() {
                 alt="Back to Muna"
                 onClick={() => handleSceneChange("muna")}
                 whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                style={{ position: "absolute", bottom: "3%", left: "3%", width: "180px", cursor: "pointer", zIndex: 10 }}
+                style={{
+                  position: "absolute",
+                  bottom: "3%",
+                  left: "3%",
+                  width: "180px",
+                  cursor: "pointer",
+                  zIndex: 10,
+                }}
               />
               <motion.img
                 src="/Mum-Letter-Button.png"
                 alt="Forward to Mum"
                 onClick={() => handleSceneChange("mum")}
                 whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                style={{ position: "absolute", bottom: "3%", right: "3%", width: "180px", cursor: "pointer", zIndex: 10 }}
+                style={{
+                  position: "absolute",
+                  bottom: "3%",
+                  right: "3%",
+                  width: "180px",
+                  cursor: "pointer",
+                  zIndex: 10,
+                }}
               />
             </>
           )}
@@ -295,8 +335,14 @@ export default function ToGrandmaPage() {
               alt="Back to Zuru"
               onClick={() => handleSceneChange("zuru")}
               whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              style={{ position: "absolute", bottom: "3%", left: "3%", width: "180px", cursor: "pointer", zIndex: 10 }}
+              style={{
+                position: "absolute",
+                bottom: "3%",
+                left: "3%",
+                width: "180px",
+                cursor: "pointer",
+                zIndex: 10,
+              }}
             />
           )}
         </motion.div>
