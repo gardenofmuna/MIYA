@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, PanInfo, useMotionValue } from "framer-motion";
 import type { AnimationItem } from "lottie-web";
 import Image from "next/image";
+import { useScreenSize } from "../../hooks/useScreenSize";
 
 type Scene = "muna" | "zuru" | "mum";
 
