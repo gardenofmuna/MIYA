@@ -1,0 +1,44 @@
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("/images/bios/wooden-bg.webp");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.imageWrapper {
+  position: absolute;
+  cursor: grab;
+  touch-action: none;
+  z-index: 2;
+}
+
+.image {
+  transition: all 0.3s ease;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.hoveredImage {
+  transition: all 0.3s ease;
+  box-shadow: 0 0 40px 15px white;
+  pointer-events: none;
+}
+
+.dragPrompt {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  z-index: 5;
+  pointer-events: none;
+  text-align: center;
+}

@@ -1,0 +1,63 @@
+.menuContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.menuIcon {
+  position: fixed;
+  top: 2vh;
+  left: 2vw;
+  width: 3vw;
+  height: auto;
+  z-index: 2001;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.spine {
+  position: absolute;
+  pointer-events: auto;
+  transition: transform 0.2s ease;
+  z-index: 2000;
+}
+
+.spine:hover {
+  transform: translateX(2vw) scale(1.02);
+}
+
+.speechBubble {
+  position: absolute;
+  left: 102%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  color: #000;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+
+.spine:hover .speechBubble {
+  display: block;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1999;
+  pointer-events: auto;
+}

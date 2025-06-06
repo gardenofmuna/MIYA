@@ -13,7 +13,7 @@ const hotspots = [
   {
     id: "Book1",
     src: "/Book1.png",
-    overlay: "/To-Grandma.png",
+    overlay: "/To-Grandma copy.webp",
     link: "/To-Grandma",
     top: "46.43%",
     left: "56.61%",
@@ -23,7 +23,7 @@ const hotspots = [
   {
     id: "Book2",
     src: "/Book2.png",
-    overlay: "/Forfatterinne i dag-Flora Nwapa (1987).png",
+    overlay: "/Forfatterinne i dag-Flora Nwapa (1987).webp",
     link: "/Forfatterinne-i-dag-Flora-Nwapa-1987",
     top: "45.56%",
     left: "33.15%",
@@ -33,7 +33,7 @@ const hotspots = [
   {
     id: "Book3",
     src: "/Book3.png",
-    overlay: "/UofT1990.png",
+    overlay: "/UofT1990.webp",
     link: "/UofT-1990",
     top: "55.32%",
     left: "44.72%",
@@ -43,8 +43,8 @@ const hotspots = [
   {
     id: "Speaker",
     src: "/Speaker.png",
-    overlay: "/music.png",
-    link: "/speaker",
+    overlay: "/music.webp",
+    link: "/speaker", // won't be used anymore
     top: "22.64%",
     left: "91.93%",
     width: "5.94%",
@@ -53,8 +53,8 @@ const hotspots = [
   {
     id: "AboutUs",
     src: "/About-Us.png",
-    overlay: "/Flora-Amede-Zuru-Muna.png",
-    link: "/about",
+    overlay: "/Flora-Amede-Zuru-Muna.webp",
+    link: "/Flora-Zuru-Muna-Amede",
     top: "58.52%",
     left: "54.30%",
     width: "12.76%",
@@ -63,7 +63,7 @@ const hotspots = [
   {
     id: "Letter",
     src: "/Letter.png",
-    overlay: "/write-a-letter.png",
+    overlay: "/write-a-letter.webp",
     link: "/letter",
     top: "54.49%",
     left: "31.09%",
@@ -76,7 +76,10 @@ export default function InteractiveDesk() {
   const router = useRouter();
   const { screenSize, isLandscape } = useScreenSize();
   const [scale, setScale] = useState(1);
+  const [showAcknowledgements, setShowAcknowledgements] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const updateScale = () => {
@@ -90,7 +93,6 @@ export default function InteractiveDesk() {
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
-  // ✅ HLS video setup
   useEffect(() => {
     const video = videoRef.current;
     const src =
@@ -112,6 +114,18 @@ export default function InteractiveDesk() {
     }
   }, []);
 
+  const handleSpeakerClick = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(console.error);
+    }
+
+    setIsPlaying(!isPlaying);
+  };
+
   if (screenSize === "mobile" && !isLandscape) {
     return <OrientationPrompt />;
   }
@@ -132,7 +146,6 @@ export default function InteractiveDesk() {
           height: "2160px",
         }}
       >
-        {/* 🎥 Bunny HLS Video Background */}
         <video
           ref={videoRef}
           autoPlay
@@ -143,7 +156,6 @@ export default function InteractiveDesk() {
           className={styles.video}
         />
 
-        {/* 📷 Optimized Static background image (WebP) */}
         <Image
           src="/background.webp"
           alt="Desk background"
@@ -152,7 +164,6 @@ export default function InteractiveDesk() {
           unoptimized
         />
 
-        {/* 🎵 Music gif */}
         <Image
           src="/music.gif"
           alt="Music animation"
@@ -162,13 +173,20 @@ export default function InteractiveDesk() {
           unoptimized
         />
 
-        {/* 📌 Interactive hotspots */}
+        <audio ref={audioRef} src="/MIYA.mp3" preload="auto" />
+
         {hotspots.map(({ id, src, overlay, link, top, left, width, height }) => (
           <div
             key={id}
             className={styles.hotspotWrapper}
             style={{ top, left, width, height }}
-            onClick={() => router.push(link)}
+            onClick={() => {
+              if (id === "Speaker") {
+                handleSpeakerClick();
+              } else {
+                router.push(link);
+              }
+            }}
           >
             <Image
               src={src}
@@ -186,6 +204,26 @@ export default function InteractiveDesk() {
             />
           </div>
         ))}
+
+        <div
+          className={styles.acknowledgementsLink}
+          onClick={() => setShowAcknowledgements(prev => !prev)}
+        >
+          <span className={showAcknowledgements ? styles.active : ""}>
+            Acknowledgements
+          </span>
+        </div>
+
+        {showAcknowledgements && (
+          <Image
+            src="/Acknowledgements.webp"
+            alt="Acknowledgements"
+            className={styles.acknowledgementsImage}
+            width={700}
+            height={1000}
+            unoptimized
+          />
+        )}
       </div>
     </motion.div>
   );

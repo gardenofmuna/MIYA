@@ -3,10 +3,9 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import InteractiveDesk from "../../components/InteractiveDesk";
-import LoaderVideo from "../../components/LoaderVideo"; // 👈 You'll create this below
-import type { LottieIntroProps } from "../../components/LottieIntro";
+import LoaderVideo from "../../components/LoaderVideo";
 
-const LottieIntro = dynamic<LottieIntroProps>(
+const LottieIntro = dynamic(
   () => import("../../components/LottieIntro"),
   { ssr: false }
 );
@@ -24,8 +23,16 @@ export default function HomePage() {
         position: "relative",
       }}
     >
-      {stage === "intro" && <LottieIntro onStart={() => setStage("loader")} />}
-      {stage === "loader" && <LoaderVideo onFinish={() => setStage("desk")} />}
+    
+
+      {stage === "intro" && (
+        <LottieIntro onStart={() => setStage("loader")} />
+      )}
+
+      {stage === "loader" && (
+        <LoaderVideo onFinish={() => setStage("desk")} />
+      )}
+
       {stage === "desk" && <InteractiveDesk />}
     </div>
   );

@@ -38,13 +38,13 @@
   pointer-events: none;
 }
 
-/* Music gif perfectly sized to match speaker, floating just above */
+/* Music gif floating above speaker */
 .musicGif {
   position: absolute;
-  top: 19.5%;           /* slightly above 22.64% */
-  left: 91.93%;         /* same as speaker */
-  width: 5.94%;         /* same as speaker */
-  height: 6.25%;        /* same as speaker */
+  top: 19.5%;
+  left: 91.93%;
+  width: 5.94%;
+  height: 6.25%;
   object-fit: contain;
   pointer-events: none;
   z-index: 11;
@@ -85,4 +85,33 @@
 
 .hotspotWrapper:hover .hotspotBase {
   filter: drop-shadow(0 0 20px white);
+}
+
+/* Acknowledgements link */
+.acknowledgementsLink {
+  position: fixed;
+  bottom: 2vh;
+  left: 2vw;
+  z-index: 2000;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.acknowledgementsLink span.active {
+  text-decoration: underline;
+}
+
+/* Acknowledgements image shown freely */
+.acknowledgementsImage {
+  position: fixed;
+  bottom: 6vh;
+  right: 2vw;
+  z-index: 2000;
 }

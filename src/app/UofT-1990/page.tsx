@@ -25,6 +25,7 @@ import { OrbitControls as OrbitControlsType } from "three-stdlib";
 import { GLTF } from "three-stdlib";
 import { Suspense, useRef, useState, useEffect } from "react";
 import Hls from "hls.js";
+import Image from "next/image";
 
 import { useScreenSize } from "../../hooks/useScreenSize";
 import OrientationPrompt from "../../../components/OrientationPrompt";
@@ -157,6 +158,56 @@ function TVScene({
   );
 }
 
+function SourceReveal() {
+  const [showSource, setShowSource] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={() => setShowSource(!showSource)}
+        style={{
+          background: "#000",
+          color: "#fff",
+          padding: "10px 18px",
+          borderRadius: "6px",
+          border: "none",
+          fontWeight: "bold",
+          fontSize: "0.9rem",
+          cursor: "pointer",
+        }}
+      >
+        {showSource ? "Hide Source" : "Source"}
+      </button>
+
+      {showSource && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "80px",
+            right: "20px",
+            zIndex: 10001,
+            maxWidth: "400px",
+            pointerEvents: "none",
+            background: "transparent",
+          }}
+        >
+          <Image
+            src="/uoft-citation.webp"
+            alt="University of Toronto citation"
+            width={400}
+            height={400}
+            style={{
+              width: "100%",
+              height: "auto",
+              background: "transparent",
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function ContactPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsRef = useRef<OrbitControlsType | null>(null);
@@ -224,53 +275,66 @@ export default function ContactPage() {
       />
 
       {sceneLoaded && (
-        <div
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            zIndex: 9999,
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-          }}
-        >
-          <button
-            onClick={handleToggleMute}
+        <>
+          <div
             style={{
-              background: "#000",
-              color: "#fff",
-              padding: "10px 16px",
-              borderRadius: "6px",
-              border: "none",
-              fontWeight: "bold",
-              fontSize: "0.9rem",
-              cursor: "pointer",
+              position: "absolute",
+              top: "20px",
+              right: "20px",
+              zIndex: 9999,
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
             }}
           >
-            {isMuted ? "Unmute" : "Mute"}
-          </button>
+            <button
+              onClick={handleToggleMute}
+              style={{
+                background: "#000",
+                color: "#fff",
+                padding: "10px 16px",
+                borderRadius: "6px",
+                border: "none",
+                fontWeight: "bold",
+                fontSize: "0.9rem",
+                cursor: "pointer",
+              }}
+            >
+              {isMuted ? "Unmute" : "Mute"}
+            </button>
 
-          <button
-            onClick={handleTogglePlayPause}
+            <button
+              onClick={handleTogglePlayPause}
+              style={{
+                background: "#000",
+                color: "#fff",
+                padding: "10px 16px",
+                borderRadius: "6px",
+                border: "none",
+                fontWeight: "bold",
+                fontSize: "0.9rem",
+                cursor: "pointer",
+              }}
+            >
+              {isPaused ? "Play" : "Pause"}
+            </button>
+          </div>
+
+          <div
             style={{
-              background: "#000",
-              color: "#fff",
-              padding: "10px 16px",
-              borderRadius: "6px",
-              border: "none",
-              fontWeight: "bold",
-              fontSize: "0.9rem",
-              cursor: "pointer",
+              position: "fixed",
+              bottom: "20px",
+              right: "20px",
+              zIndex: 10000,
             }}
           >
-            {isPaused ? "Play" : "Pause"}
-          </button>
-        </div>
+            <SourceReveal />
+          </div>
+        </>
       )}
 
       <div style={{ height: "100vh", background: "#2c2c2c" }}>
-        <Canvas shadows camera={{ position: [3.18499, 1.95879, 10.55741], fov: 35 }}>
+        <Canvas shadows camera={{ position: [3.18, 1.96, 10.56], fov: 35 }}>
           <ambientLight intensity={0.5} />
           <hemisphereLight color="#ffffff" groundColor="#222222" intensity={0.8} />
           <directionalLight

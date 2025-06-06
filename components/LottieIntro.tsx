@@ -145,7 +145,7 @@ export default function LottieIntro({ onStart }: LottieIntroProps) {
       {/* 🪵 Background */}
       <div
         style={{
-          backgroundImage: "url('/images/wood-bg.png')",
+          backgroundImage: "url('/images/wooden-bg.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           position: "absolute",

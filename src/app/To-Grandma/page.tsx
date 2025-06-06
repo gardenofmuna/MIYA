@@ -25,33 +25,33 @@ type SceneImage = {
 
 const sceneImages: Record<Scene, SceneImage[]> = {
   muna: [
-    { src: "/images/Grandma-side-profile.png", alt: "grandma", top: "5%", left: "5%", rotate: -6 },
-    { src: "/images/Page-1.png", alt: "page 1", top: "5%", left: "8%", rotate: -4 },
-    { src: "/images/Page-2.png", alt: "page 2", top: "25%", left: "60%", rotate: 5 },
-    { src: "/images/Page-3.png", alt: "page 3", top: "50%", left: "20%", rotate: -8 },
-    { src: "/images/Page-4.png", alt: "page 4", top: "65%", left: "70%", rotate: 7 },
-    { src: "/images/Muna.png", alt: "polaroid", top: "4%", left: "75%", rotate: 6 },
-    { src: "/images/Tape-Recorder.png", alt: "tape recorder", top: "60%", left: "5%", rotate: -12 },
+    { src: "/images/Grandma-side-profile.webp", alt: "grandma", top: "5%", left: "5%", rotate: -6 },
+    { src: "/images/Page-1.webp", alt: "page 1", top: "5%", left: "8%", rotate: -4 },
+    { src: "/images/Page-2.webp", alt: "page 2", top: "25%", left: "60%", rotate: 5 },
+    { src: "/images/Page-3.webp", alt: "page 3", top: "50%", left: "20%", rotate: -8 },
+    { src: "/images/Page-4.webp", alt: "page 4", top: "65%", left: "70%", rotate: 7 },
+    { src: "/images/Muna.webp", alt: "polaroid", top: "4%", left: "75%", rotate: 6 },
+    { src: "/images/Tape-Recorder.webp", alt: "tape recorder", top: "60%", left: "5%", rotate: -12 },
   ],
   zuru: [
-    { src: "/images/Mama.png", alt: "mama", top: "5%", left: "5%", rotate: -6 },
-    { src: "/images/Zuru-Letter1.png", alt: "letter1", top: "5%", left: "8%", rotate: -4 },
-    { src: "/images/Zuru-Letter2.png", alt: "letter2", top: "25%", left: "60%", rotate: 5 },
-    { src: "/images/Zuru-Letter3.png", alt: "letter3", top: "50%", left: "20%", rotate: -8 },
-    { src: "/images/Zuru.png", alt: "polaroid", top: "4%", left: "75%", rotate: 6 },
-    { src: "/images/Tape-Recorder.png", alt: "tape recorder", top: "60%", left: "5%", rotate: -12 },
+    { src: "/images/Mama.webp", alt: "mama", top: "5%", left: "5%", rotate: -6 },
+    { src: "/images/Zuru-Letter1.webp", alt: "letter1", top: "5%", left: "8%", rotate: -4 },
+    { src: "/images/Zuru-Letter2.webp", alt: "letter2", top: "25%", left: "60%", rotate: 5 },
+    { src: "/images/Zuru-Letter3.webp", alt: "letter3", top: "50%", left: "20%", rotate: -8 },
+    { src: "/images/Zuru.webp", alt: "polaroid", top: "4%", left: "75%", rotate: 6 },
+    { src: "/images/Tape-Recorder.webp", alt: "tape recorder", top: "60%", left: "5%", rotate: -12 },
   ],
   mum: [
-    { src: "/grandma-passport.png", alt: "passport", top: "2%", left: "2%", rotate: -4, width: "16vw" },
-    { src: "/grandma-polaroid.png", alt: "polaroid", top: "12%", left: "22%", rotate: 4 },
-    { src: "/Uzoma-graduation.png", alt: "grad", top: "60%", left: "5%", rotate: -3 },
-    { src: "/mum_grandma.png", alt: "mum+grandma", top: "35%", left: "60%", rotate: -6 },
-    { src: "/Mum_trad.png", alt: "trad", top: "5%", left: "70%", rotate: 5 },
-    { src: "/Mum_car.png", alt: "car", top: "70%", left: "35%", rotate: 2 },
-    { src: "/Mum-lawschool.png", alt: "lawschool", top: "25%", left: "5%", rotate: -2 },
-    { src: "/Mum-wedding1.png", alt: "wedding1", top: "15%", left: "40%", rotate: 1 },
-    { src: "/Mum-wedding2.png", alt: "wedding2", top: "50%", left: "75%", rotate: 3 },
-    { src: "/Note_iphone_Letter.png", alt: "iphone-note", top: "20%", left: "30%", rotate: 0, width: "30vw" },
+    { src: "/grandma-passport.webp", alt: "passport", top: "2%", left: "2%", rotate: -4, width: "16vw" },
+    { src: "/grandma-polaroid.webp", alt: "polaroid", top: "12%", left: "22%", rotate: 4 },
+    { src: "/Uzoma-graduation.webp", alt: "grad", top: "60%", left: "5%", rotate: -3 },
+    { src: "/mum_grandma.webp", alt: "mum+grandma", top: "35%", left: "60%", rotate: -6 },
+    { src: "/Mum_trad.webp", alt: "trad", top: "5%", left: "70%", rotate: 5 },
+    { src: "/Mum_car.webp", alt: "car", top: "70%", left: "35%", rotate: 2 },
+    { src: "/Mum-lawschool.webp", alt: "lawschool", top: "25%", left: "5%", rotate: -2 },
+    { src: "/Mum-wedding1.webp", alt: "wedding1", top: "15%", left: "40%", rotate: 1 },
+    { src: "/Mum-wedding2.webp", alt: "wedding2", top: "50%", left: "75%", rotate: 3 },
+    { src: "/Note_iphone_Letter.webp", alt: "iphone-note", top: "20%", left: "30%", rotate: 0, width: "30vw" },
   ],
 };
 
@@ -214,7 +214,7 @@ export default function ToGrandmaPage() {
     <div style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
       <audio ref={audioRef} preload="auto" />
       <Image
-        src="/images/wood-bg.png"
+        src="/images/wooden-bg.webp"
         alt="wood background"
         fill
         style={{ objectFit: "cover", zIndex: 0 }}
@@ -291,7 +291,7 @@ export default function ToGrandmaPage() {
           )}
 
           <motion.img
-            src="/images/play-pause.png"
+            src="/images/play-pause.webp"
             alt="Play/Pause"
             onClick={toggleAudio}
             animate={!isPlaying ? { opacity: [0.6, 1, 0.6] } : { opacity: 1 }}
@@ -309,7 +309,7 @@ export default function ToGrandmaPage() {
 
           {currentScene === "muna" && (
             <motion.img
-              src="/Zuru-Letter-Button.png"
+              src="/Zuru-Letter-Button.webp"
               alt="Next: Zuru's Letter"
               onClick={() => handleSceneChange("zuru")}
               whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
@@ -327,7 +327,7 @@ export default function ToGrandmaPage() {
           {currentScene === "zuru" && (
             <>
               <motion.img
-                src="/Muna-Letter-Button.png"
+                src="/Muna-Letter-Button.webp"
                 alt="Back to Muna"
                 onClick={() => handleSceneChange("muna")}
                 whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
@@ -341,7 +341,7 @@ export default function ToGrandmaPage() {
                 }}
               />
               <motion.img
-                src="/Mum-Letter-Button.png"
+                src="/Mum-Letter-Button.webp"
                 alt="Forward to Mum"
                 onClick={() => handleSceneChange("mum")}
                 whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}
@@ -359,7 +359,7 @@ export default function ToGrandmaPage() {
 
           {currentScene === "mum" && (
             <motion.img
-              src="/Zuru-Letter-Button-previous.png"
+              src="/Zuru-Letter-Button-previous.webp"
               alt="Back to Zuru"
               onClick={() => handleSceneChange("zuru")}
               whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 12px rgba(0,0,0,0.8))" }}

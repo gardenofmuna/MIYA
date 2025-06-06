@@ -261,7 +261,7 @@ export default function WritingCanvas() {
       <div
         style={{
           position: "absolute",
-          top: "5%",
+          top: "10%",
           left: "1.5%",
           display: "flex",
           flexDirection: "column",
