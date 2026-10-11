@@ -27,6 +27,7 @@
     "@fontsource/homemade-apple": "^5.2.5",
     "@react-three/drei": "^10.0.6",
     "@react-three/fiber": "^9.1.2",
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.15.0",
     "hls.js": "^1.6.5",
     "html-to-image": "^1.11.13",
